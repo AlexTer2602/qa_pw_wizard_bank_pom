@@ -1,7 +1,25 @@
-import { test } from '@playwright/test';
+import { test, expect} from '@playwright/test';
 import { faker } from '@faker-js/faker';
+import { AddCustomerPage } from '../../../src/pages/manager/AddCustomerPage';
+import { OpenAccountPage } from '../../../src/pages/manager/OpenAccountPage';
+import { CustomersListPage } from '../../../src/pages/manager/CustomersListPage';
+
+let firstName, lastName, postCode;
+
 
 test.beforeEach(async ({ page }) => {
+
+  const addCustomerPage = new AddCustomerPage(page);
+  
+    firstName = faker.person.firstName();
+    lastName = faker.person.lastName();
+    postCode = faker.location.zipCode();
+  
+    await addCustomerPage.open();
+    await addCustomerPage.addCustomer(firstName, lastName, postCode);
+    
+    await page.reload();
+
   /* 
   Pre-conditons:
   1. Open Add Customer page
@@ -14,6 +32,27 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Assert manager can add new customer', async ({ page }) => {
+    
+
+    const openAccountPage = new OpenAccountPage(page);
+    const customersListPage = new CustomersListPage(page);
+
+    await openAccountPage.open();
+
+    await openAccountPage.selectCustomer(`${firstName} ${lastName}`);
+    await openAccountPage.selectCurrency('Dollar');
+    await openAccountPage.clickProcessButton();
+    
+
+    await customersListPage.open();
+    
+    const lastRow = page.locator('table tbody tr').last();
+    await expect(lastRow.locator('td').nth(0)).toHaveText(firstName);
+    await expect(lastRow.locator('td').nth(1)).toHaveText(lastName);
+    await expect(lastRow.locator('td').nth(2)).toHaveText(postCode);
+    
+
+
   /* 
   Test:
   1. Click [Open Account].

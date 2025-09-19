@@ -1,7 +1,26 @@
-import { test } from '@playwright/test';
+import { test, expect} from '@playwright/test';
 import { faker } from '@faker-js/faker';
+import { OpenAccountPage } from '../../../src/pages/manager/OpenAccountPage';
 
 test('Assert manager can choose currencies for account', async ({ page }) => {
+
+  const openAccountPage = new OpenAccountPage(page);
+  
+  await openAccountPage.open();
+
+  const currencyDropdown = page.locator('#currency');
+
+  
+
+  await currencyDropdown.selectOption({ label: 'Dollar' });
+  await expect(currencyDropdown).toHaveValue('Dollar');
+
+  await currencyDropdown.selectOption({ label: 'Pound' });
+  await expect(currencyDropdown).toHaveValue('Pound');
+
+  await currencyDropdown.selectOption({ label: 'Rupee' });
+  await expect(currencyDropdown).toHaveValue('Rupee');
+
   /* 
   Test:
   1. Open the Open account page 

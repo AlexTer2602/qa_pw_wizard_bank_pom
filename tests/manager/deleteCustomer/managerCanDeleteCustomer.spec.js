@@ -1,7 +1,20 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
+import { CustomersListPage } from '../../../src/pages/manager/CustomersListPage';
+import { AddCustomerPage } from '../../../src/pages/manager/AddCustomerPage';
+
 
 test.beforeEach(async ({ page }) => {
+    const addCustomerPage = new AddCustomerPage(page);
+  
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+    const postCode = faker.location.zipCode();
+  
+    await addCustomerPage.open();
+    await addCustomerPage.addCustomer(firstName, lastName, postCode);
+    
+    await page.reload();
   /* 
   Pre-conditons:
   1. Open Add Customer page.
@@ -13,6 +26,21 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Assert manager can delete customer', async ({ page }) => {
+  const customersListPage = new CustomersListPage(page);
+  await customersListPage.open();
+
+  const lastRow = page.locator('table tbody tr').last();
+  const firstName = await lastRow.locator('td').nth(0).textContent();
+
+
+  await lastRow.locator('button').click();
+  await expect(page.locator(`table tbody tr:has-text("${firstName}")`)).toHaveCount(0);
+
+  await page.reload();
+  await customersListPage.open();
+
+  await expect(page.locator(`table tbody tr:has-text("${firstName}")`)).toHaveCount(0);
+
   /* 
   Test:
   1. Open Customers page.
