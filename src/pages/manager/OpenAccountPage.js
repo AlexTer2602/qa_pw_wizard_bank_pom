@@ -20,4 +20,5 @@ export class OpenAccountPage {
     await expect(this.selectCurrencyDropdown).toHaveValue(currency);
 
 } 
+  
 }

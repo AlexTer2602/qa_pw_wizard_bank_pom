@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Assert manager can search customer by Postal Code', async ({ page }) => {
-   const customersListPage = new CustomersListPage(page);
+  const customersListPage = new CustomersListPage(page);
   const addCustomerPage = new AddCustomerPage(page);
   
     await addCustomerPage.clickCustomersButton();
